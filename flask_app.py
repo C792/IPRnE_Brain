@@ -35,7 +35,7 @@ def uploaded_file(filename):
 def vgg16process(filename:str):
     IMG_SIZE = 128
     import tensorflow as tf
-    model = tf.keras.models.load_model('model.h5')
+    model = tf.keras.models.load_model('vgg_model.h5')
 
     from tensorflow.keras.preprocessing import image
     import numpy as np
