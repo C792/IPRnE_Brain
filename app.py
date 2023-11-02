@@ -23,7 +23,11 @@ def upload():
     if file:
         filename = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
         file.save(filename)
-        return 'File uploaded successfully'
+        return process(filename)
+
+def process(filename:str):
+    return f"File {filename[8:]} processed successfully"
+    
 
 if __name__ == '__main__':
     app.run()

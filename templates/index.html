@@ -1,13 +1,18 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>Image Uploader</title>
-</head>
-<body>
+  </head>
+  <body>
     <h1>Image Uploader</h1>
     <form method="POST" action="/upload" enctype="multipart/form-data">
-        <input type="file" name="file">
-        <input type="submit" value="Upload">
+      <input
+        type="file"
+        id="test_img"
+        name="file"
+        accept=".jpg, .jpeg, .png"
+      />
+      <input type="submit" value="Upload" />
     </form>
-</body>
+  </body>
 </html>
