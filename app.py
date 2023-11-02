@@ -1,8 +1,9 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, send_from_directory, url_for
 import os
 
 app = Flask(__name__)
 
+fname = ''
 UPLOAD_FOLDER = 'uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -12,6 +13,7 @@ def index():
 
 @app.route('/upload', methods=['POST'])
 def upload():
+    global fname
     if 'file' not in request.files:
         return 'No file part'
 
@@ -23,7 +25,12 @@ def upload():
     if file:
         filename = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
         file.save(filename)
+        fname = filename
         return vgg16process(filename)
+    
+@app.route('/uploaded/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 def vgg16process(filename:str):
     IMG_SIZE = 128
@@ -43,14 +50,21 @@ def vgg16process(filename:str):
 
     preprocessed_image = preprocess_image(filename)
 
-    predictions = model.predict(preprocessed_image)
+    ans = model.predict(preprocessed_image)
 
-    from tensorflow.keras.applications.vgg16 import decode_predictions
-
-    decoded_predictions = decode_predictions(predictions, top=1)
-    predicted_label = decoded_predictions[0][0][1]
-    return f"File {filename[8:]} processed successfully\nPredicted label: {predicted_label}"
-    
+    d_name = [
+        'pituitary',
+        'notumor',
+        'meningioma',
+        'glioma',
+    ]
+    for i in range(4):
+        if ans[0][i]:
+            return f"""File {filename[8:]} processed successfully
+            <br>
+            View your image <a href="{url_for("uploaded_file", filename=filename[8:])}">here</a>
+            <br>
+            Predicted label: { d_name[i] }"""
 
 if __name__ == '__main__':
     app.run()
